@@ -1,0 +1,224 @@
+<html>
+  <title>Stock App</title>
+  <head>
+    <script src="https://use.fontawesome.com/8647d9d7f9.js"></script>
+   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.min.css') }}"></link>
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>
+  </head>
+    <body>
+       <div class="title"><h1>Track Stock</h1>
+       </div>
+      <div class="container-fluid back">
+     <div class="container-fluid chart"> <canvas id="myChart" width="200" height="100"></canvas></div>
+	<div class="container-fluid row car">
+
+        </div>
+        <div class="container-fluid addNew row">
+          <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 addD">
+          <input type="text" placeholder="Enter symbol of your stock" class="form-control addIn"></input>
+            </div>
+          	<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 addD">
+			<button class="addEle btn btn-block ">Add</button>
+          	</div>
+          </div>
+      </div>
+        <div class=" bottom text-center">
+        <p>Displays stocks daily open data.Stock data provided by quandl.
+           </p>
+          </div>
+      </body>
+  </html>
+<style>
+  body{
+  font-family: 'Raleway', sans-serif;
+  }
+  .addNew{
+  display:block;
+  }
+  h1{
+  margin-top:10px;
+  }
+  .chart{
+  height:500px;
+  max-width:95%;
+  background:#fff;
+  margin-top:10px;
+  margin-bottom:10px;
+  }
+  p{
+	margin-left:10px;
+  }
+  .back{
+  max-width:1200px;
+  background:#dddddd;
+  margin-top:10px;
+
+  }
+  .form-control{
+  border-radius:0px; !important
+  }
+  .title{
+  color:#fff;
+  background:#00cc99;
+  margin-top:-0.5%;
+  }
+  .bottom{
+  color:#fff;
+  background:#00cc99;
+  position:absolute;
+  bottom:0px;
+  width:100%;
+  }
+  .addD
+  {
+  padding:0px;
+  margin:0px;
+
+  }
+  .addEle{
+  height: 32px;
+  background:#00cc99;
+  }
+  .cards{
+  background:#fff;
+  max-width:220px;
+  padding:0px;
+  margin-bottom:3px;
+
+  }
+  .btn{
+  margin-top:2px;
+  border-radius:0%;
+  background:#661a00;
+  color:#fff;
+  }
+  .btn:hover,.btn:focus,.btn:hover:focus{
+  	color:#fff;
+
+  }
+</style>
+  <script>
+    function mkChart(){
+    var html="";
+    backColor = ['rgba(155, 199, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)',
+                'rgba(255, 159, 64, 0.8)',
+  	        'rgba(55, 199, 13, 0.8)',
+                'rgba(154, 162, 35, 0.8)',
+                'rgba(55, 206, 186, 0.8)',
+                'rgba(175, 19, 102, 0.8)',
+                'rgba(50, 10, 55, 0.8)',
+                'rgba(25, 255, 164, 0.8)'];
+    borderColor = [
+                'rgba(155,199,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+  	        'rgba(55, 199, 13, 1)',
+                'rgba(154, 162, 35, 1)',
+                'rgba(55, 206, 186, 1)',
+                'rgba(175, 19, 102, 1)',
+                'rgba(50, 10, 55, 1)',
+                'rgba(25, 255, 164, 1)'
+            ]
+    $.ajax({
+    	type: 'GET',
+    	url: '/getData',
+    	processData:false,
+    	success: function(result) {
+    	result = jQuery.parseJSON(result);
+    	var dat = [];
+	for (i in result.data)
+    	{
+           color = Math.floor(Math.random()*backColor.length);
+    	    html = html + "<div class='col-xl-2 col-md-3 col-sm-6 col-xs-6'><div class='container-fluid cards row'><div class='discription col-xl-9 col-md-9 col-sm-9 col-xs-9'><h4>"+i+"</h4></div><div class='rm col-xl-3 col-md-3 col-sm-3 col-xs-3' ><button class='btn rmBtn' id = '"+i+"'>X</button></div></div></div>";
+    	    var newItem = {
+            label: i,
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: backColor[color],
+            borderColor: borderColor[color],
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: borderColor[color],
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: backColor[color],
+            pointHoverBorderColor: backColor[color],
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: result.data[i],
+            spanGaps: false,
+        };
+    	dat.push(newItem);
+    	}
+    $(".car").html(html);
+    var ctx = $("#myChart");
+    var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: result.lables,
+    datasets: dat
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+    }
+    });
+
+    }
+$(document).ready(function(){
+    	var maskWidth = $(".chart").width();
+    	$(".chart").css({height:maskWidth/2})
+    	mkChart();
+    	setInterval(function(){ mkChart(); }, 30000);
+    });
+$( window ).resize(function() {
+  var maskWidth = $(".chart").width();
+    	$(".chart").css({height:maskWidth/2})
+
+});
+ $(document).on('click','.addEle',function(){
+    	$.ajax({
+    	type: 'POST',
+    	url: '/add/',
+    	data: ($('.addIn').val()),
+    	processData:false,
+    	contentType: 'application/octet-stream; charset=utf-8',
+    	success: function(result) {
+    		mkChart();
+    	}
+    	});
+    });
+    $(document).on('click','.rmBtn',function(){
+    	$.ajax({
+    	type: 'POST',
+    	url: '/remove/',
+    	data: $(this).attr('id'),
+    	processData:false,
+    	contentType: 'application/octet-stream; charset=utf-8',
+    	success: function(result) {
+    		mkChart();
+    	}
+    	});
+
+    });
+</script>
